@@ -371,3 +371,4 @@ MigrationBackup/
 CMakeUserPresets.json
 .clangd
 .opencode/
+.trae/

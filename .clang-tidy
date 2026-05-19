@@ -12,6 +12,8 @@ Checks: >
   readability-*,
   -readability-magic-numbers,
   -readability-function-cognitive-complexity,
+  -readability-identifier-length,
+  -readability-simplify-boolean-expr,
   clang-analyzer-core*,
   clang-analyzer-cplusplus*,
 WarningsAsErrors: '*'

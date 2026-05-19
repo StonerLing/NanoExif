@@ -22,11 +22,18 @@ class Metadata {
   }
   bool Has(key_type key) const { return data_.count(key) > 0; }
 
+  Metavalue Get(key_type key) const {
+    if (!Has(key)) {
+      return Metavalue{};
+    }
+    return data_.at(key);
+  }
+
   template <ExifTag tag>
   auto Get() const {
     using value_type = typename ExifTagTrait<tag>::type;
 
-    if(!Has(tag)){
+    if (!Has(tag)) {
       return value_type(0);
     }
     return std::get<value_type>(data_.at(tag));

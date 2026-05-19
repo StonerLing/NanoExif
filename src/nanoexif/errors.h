@@ -18,7 +18,10 @@ enum class ErrorCode : uint8_t {
   COULD_NOT_DETERMINE_EXTENSION,
   INVALID_EXIF_HEADER,
   INVALID_JPEG_HEADER,
-  UNSUPPORTED_FORMAT
+  UNSUPPORTED_FORMAT,
+  INVALID_XMP_HEADER,
+  XML_PARSE_ERROR,
+  XMP_NOT_FOUND
 };
 
 class ErrorCategory : public std::error_category {
@@ -51,6 +54,15 @@ inline const ErrorCategory& error_category() {
       break;
     case ErrorCode::UNSUPPORTED_FORMAT:
       return "Unsupported format";
+      break;
+    case ErrorCode::INVALID_XMP_HEADER:
+      return "Invalid XMP header";
+      break;
+    case ErrorCode::XML_PARSE_ERROR:
+      return "XML parse error";
+      break;
+    case ErrorCode::XMP_NOT_FOUND:
+      return "XMP data not found";
       break;
     default:
       return "Unknown error";
