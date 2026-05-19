@@ -1,0 +1,21 @@
+BasedOnStyle: Google
+BinPackArguments: false
+BinPackParameters: false
+DerivePointerAlignment: false
+
+IncludeCategories:
+  # 1. IncludeIsMainRegex
+  # 2. C headers <*.h>
+  - Regex:    '^<.*\.h>$' 
+    Priority: 1
+  # 3. C++ headers <*>
+  - Regex:    '^<[^/]+>$'
+    Priority: 2
+  # 4. third party headers
+  - Regex:    '^<.*>$'
+    Priority: 3
+  # 5. internal headers
+  - Regex:    '^".*"$'
+    Priority: 4
+IncludeIsMainRegex: '([-_](test|unittest))?$'
+IncludeBlocks: Regroup
