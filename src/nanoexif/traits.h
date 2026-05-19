@@ -1,6 +1,8 @@
 ﻿// SPDX-License-Identifier: MIT
 
 #include <array>
+#include <vector>
+
 #pragma once
 
 namespace nne {
@@ -18,4 +20,9 @@ struct std_array_element<std::array<T, N>> {
   using type = T;
   static constexpr std::size_t size = N;
 };
+
+template <typename T>
+struct is_vector : std::false_type {};
+template <typename T>
+struct is_vector<std::vector<T>> : std::true_type {};
 }  // namespace nne

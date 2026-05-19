@@ -11,18 +11,18 @@
 
 namespace nne::detail {
 
-struct XMLAttribute {
+struct XmlAttribute {
   std::string name;
   std::string value;
 };
 
-struct XMLElement {
+struct XmlElement {
   std::string name;
   std::string text;
-  std::vector<XMLAttribute> attributes;
-  std::vector<XMLElement> children;
+  std::vector<XmlAttribute> attributes;
+  std::vector<XmlElement> children;
 
-  [[nodiscard]] const XMLElement* FindChild(const std::string& name) const {
+  [[nodiscard]] const XmlElement* FindChild(const std::string& name) const {
     for (const auto& child : children) {
       if (child.name == name) {
         return &child;
@@ -41,7 +41,7 @@ struct XMLElement {
     return nullptr;
   }
 
-  [[nodiscard]] const XMLElement* FindChildByQualified(
+  [[nodiscard]] const XmlElement* FindChildByQualified(
       const std::string& ns, const std::string& local) const {
     const std::string qname = ns + ":" + local;
     for (const auto& child : children) {
@@ -53,17 +53,17 @@ struct XMLElement {
   }
 };
 
-class XMLParser {
+class XmlParser {
  public:
   // NOLINTNEXTLINE(modernize-use-default-member-init)
-  explicit XMLParser(std::string_view input) : input_(input), pos_(0) {}
+  explicit XmlParser(std::string_view input) : input_(input), pos_(0) {}
 
-  [[nodiscard]] Result<XMLElement> Parse() {
+  [[nodiscard]] Result<XmlElement> Parse() {
     if (!SkipProlog()) {
-      return make_result<XMLElement>(error_);
+      return make_result<XmlElement>(error_);
     }
 
-    XMLElement root;
+    XmlElement root;
     root.name = "__root__";
     while (pos_ < input_.size()) {
       SkipWhitespace();
@@ -74,27 +74,27 @@ class XMLParser {
         if (IsAt("<!--")) {
           AdvanceN(4);
           if (!SkipComment()) {
-            return make_result<XMLElement>(error_);
+            return make_result<XmlElement>(error_);
           }
           continue;
         }
         if (IsAt("<?")) {
           AdvanceN(2);
           if (!SkipProcessingInstruction()) {
-            return make_result<XMLElement>(error_);
+            return make_result<XmlElement>(error_);
           }
           continue;
         }
-        XMLElement child;
+        XmlElement child;
         if (!ParseElement(child)) {
-          return make_result<XMLElement>(error_);
+          return make_result<XmlElement>(error_);
         }
         root.children.push_back(std::move(child));
       } else {
         break;
       }
     }
-    return make_result<XMLElement>(std::move(root));
+    return make_result<XmlElement>(std::move(root));
   }
 
  private:
@@ -321,7 +321,7 @@ class XMLParser {
     return true;
   }
 
-  bool ParseAttribute(XMLAttribute& out) {
+  bool ParseAttribute(XmlAttribute& out) {
     if (!ParseName(out.name)) {
       return false;
     }
@@ -336,10 +336,10 @@ class XMLParser {
     return true;
   }
 
-  bool ParseAttributes(std::vector<XMLAttribute>& attrs) {
+  bool ParseAttributes(std::vector<XmlAttribute>& attrs) {
     SkipWhitespace();
     while (pos_ < input_.size() && IsNameStart(Peek())) {
-      XMLAttribute attr;
+      XmlAttribute attr;
       if (!ParseAttribute(attr)) {
         return false;
       }
@@ -365,7 +365,7 @@ class XMLParser {
     return true;
   }
 
-  bool ParseElement(XMLElement& out) {
+  bool ParseElement(XmlElement& out) {
     if (!Match('<')) {
       return Fail(ErrorCode::XML_PARSE_ERROR);
     }
@@ -431,7 +431,7 @@ class XMLParser {
           out.text += std::string(input_.substr(start, pos_ - start - 3));
           continue;
         }
-        XMLElement child;
+        XmlElement child;
         if (!ParseElement(child)) {
           return false;
         }
@@ -449,8 +449,8 @@ class XMLParser {
   }
 };
 
-inline Result<XMLElement> ParseXML(std::string_view input) {
-  XMLParser parser(input);
+inline Result<XmlElement> ParseXML(std::string_view input) {
+  XmlParser parser(input);
   return parser.Parse();
 }
 

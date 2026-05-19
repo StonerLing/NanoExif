@@ -57,7 +57,7 @@ inline std::string FindXmpPacket(const std::vector<char>& buf) {
   return {start, pos + buf.size() - (start - pos)};
 }
 
-inline void ExtractXmpAttributes(const detail::XMLElement& elem,
+inline void ExtractXmpAttributes(const detail::XmlElement& elem,
                                  Metadata<XMP>& metadata) {
   for (const auto& attr : elem.attributes) {
     if (attr.name.find("xmlns") != 0 && attr.name.find("rdf:") != 0) {
@@ -131,7 +131,7 @@ class Reader<XMP, image_format> : ReaderBase<XMP> {
     if (!parse_result) {
       return make_result<MetadataT>(parse_result.error());
     }
-    const detail::XMLElement& root = *parse_result;
+    const detail::XmlElement& root = *parse_result;
 
     const auto* xmpmeta = root.FindChild("x:xmpmeta");
     if (xmpmeta == nullptr) {
@@ -315,7 +315,7 @@ class Reader<XMP, image_format> : ReaderBase<XMP> {
   MetadataT metadata_;
 };
 
-inline Result<Metadata<XMP>> ReadXMP(const std::filesystem::path& path) {
+inline Result<Metadata<XMP>> ReadXmp(const std::filesystem::path& path) {
   std::string ext = path.extension().string();
   for (auto& c : ext) {
     if (c >= 'A' && c <= 'Z') {

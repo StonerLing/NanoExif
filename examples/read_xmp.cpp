@@ -2,9 +2,9 @@
 //
 // Example: read and display XMP metadata from a JPEG/TIFF image.
 
+#include <filesystem>
 #include <iomanip>
 #include <iostream>
-#include <filesystem>
 
 #include "nanoexif/readers/reader_xmp.h"
 
@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
     return 1;
   }
 
-  const auto result = ReadXMP(std::filesystem::path(argv[1]));
+  const auto result = ReadXmp(std::filesystem::path(argv[1]));
   if (!result.has_value()) {
     std::cout << "Error: " << result.error().message() << '\n';
     return 1;

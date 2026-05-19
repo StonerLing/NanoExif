@@ -4,11 +4,9 @@
 
 #include <string_view>
 
-namespace nne {
+namespace nne::xmp {
 
-namespace XmpNs {
-
-// DC (Dublin Core)
+// NOLINTBEGIN(google-objc-global-variable-declaration)
 inline constexpr std::string_view dc = "dc";
 inline constexpr std::string_view dc_creator = "dc:creator";
 inline constexpr std::string_view dc_title = "dc:title";
@@ -39,11 +37,9 @@ inline constexpr std::string_view xmp_CreatorTool = "xmp:CreatorTool";
 inline constexpr std::string_view exif = "exif";
 inline constexpr std::string_view exif_FNumber = "exif:FNumber";
 inline constexpr std::string_view exif_ExposureTime = "exif:ExposureTime";
-inline constexpr std::string_view exif_ISOSpeedRatings =
-    "exif:ISOSpeedRatings";
+inline constexpr std::string_view exif_ISOSpeedRatings = "exif:ISOSpeedRatings";
 inline constexpr std::string_view exif_FocalLength = "exif:FocalLength";
-inline constexpr std::string_view exif_ExposureProgram =
-    "exif:ExposureProgram";
+inline constexpr std::string_view exif_ExposureProgram = "exif:ExposureProgram";
 inline constexpr std::string_view exif_DateTimeOriginal =
     "exif:DateTimeOriginal";
 
@@ -74,6 +70,5 @@ inline constexpr std::string_view xmpMM_DocumentID = "xmpMM:DocumentID";
 inline constexpr std::string_view xmpMM_InstanceID = "xmpMM:InstanceID";
 inline constexpr std::string_view xmpMM_OriginalDocumentID =
     "xmpMM:OriginalDocumentID";
-
-}  // namespace XmpNs
-}  // namespace nne
+// NOLINTEND(google-objc-global-variable-declaration)
+}  // namespace nne::xmp

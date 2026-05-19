@@ -10,6 +10,8 @@
 #include <variant>
 #include <vector>
 
+#include "nanoexif/traits.h"
+
 namespace nne {
 using rational_t = std::uint64_t;
 inline double RationalToDouble(uint64_t packed, bool is_little_endian = true) {
@@ -88,11 +90,6 @@ using Metavalue = std::variant<std::monostate,
                                double,
                                std::vector<double>,
                                std::string>;
-
-template <typename T>
-struct is_vector : std::false_type {};
-template <typename T>
-struct is_vector<std::vector<T>> : std::true_type {};
 
 void PrintMetavalue(const Metavalue& value) {
   std::visit(

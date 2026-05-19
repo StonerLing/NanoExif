@@ -4,12 +4,12 @@
 
 #include <array>
 #include <cstddef>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <istream>
 #include <utility>
 #include <vector>
-#include <filesystem>
 
 #include "nanoexif/reader.h"
 #include "nanoexif/tags/tags_exif.h"
@@ -231,7 +231,7 @@ class Reader<EXIF, image_format> : ReaderBase<EXIF> {
   std::vector<std::byte> tiff_header_;
 };
 
-inline Result<Metadata<EXIF>> ReadEXIF(const std::filesystem::path& path) {
+inline Result<Metadata<EXIF>> ReadExif(const std::filesystem::path& path) {
   std::string ext = path.extension().string();
   for (auto& c : ext) {  // NOLINT
     if (c >= 'A' && c <= 'Z') {

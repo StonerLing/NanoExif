@@ -2,11 +2,11 @@
 //
 // Example: read and display GeoTIFF metadata from a TIFF image.
 
+#include <filesystem>
 #include <iomanip>
 #include <iostream>
-#include <filesystem>
 
-#include "nanoexif/readers/reader_gtiff.h"
+#include "nanoexif/readers/reader_geotiff.h"
 
 // NOLINTNEXTLINE(google-build-using-namespace)
 using namespace nne;
@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
     return 1;
   }
 
-  const auto result = ReadGeoTIFF(std::filesystem::path(argv[1]));
+  const auto result = ReadGeoTiff(std::filesystem::path(argv[1]));
   if (!result.has_value()) {
     std::cout << "Error: " << result.error().message() << '\n';
     return 1;
@@ -28,8 +28,8 @@ int main(int argc, char** argv) {
 
   std::cout << "============= All GeoTIFF Tags =============\n";
   for (const auto& [key, value] : metadata) {
-    std::cout << "  0x" << std::hex << std::setw(4) << std::setfill('0')
-              << key << std::dec << std::setfill(' ') << "  ";
+    std::cout << "  0x" << std::hex << std::setw(4) << std::setfill('0') << key
+              << std::dec << std::setfill(' ') << "  ";
     PrintMetavalue(value);
     std::cout << '\n';
   }

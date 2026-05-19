@@ -2,10 +2,10 @@
 //
 // Example: read and display EXIF metadata from a JPEG image.
 
+#include <filesystem>
 #include <iomanip>
 #include <iostream>
 #include <string>
-#include <filesystem>
 
 #include "nanoexif/readers/reader_exif.h"
 
@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
     return 1;
   }
 
-  auto result = ReadEXIF(std::filesystem::path(argv[1]));
+  const auto result = ReadExif(std::filesystem::path(argv[1]));
   if (!result.has_value()) {
     std::cout << "Error: " << result.error().message() << '\n';
     return 1;

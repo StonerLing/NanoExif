@@ -17,7 +17,7 @@
 #include "nanoexif/metadata.h"
 #include "nanoexif/reader.h"
 #include "nanoexif/tags/tags_exif.h"
-#include "nanoexif/tags/tags_gtiff.h"
+#include "nanoexif/tags/tags_geotiff.h"
 #include "nanoexif/types.h"
 
 namespace nne {
@@ -27,10 +27,9 @@ struct is_metaformat_supported<TIFF, GEOTIFF> : std::true_type {};
 
 namespace detail {
 
-inline std::string ExtractGeoAscii(
-    const std::vector<uint16_t>& geo_key_dir,
-    std::size_t key_entry_start,
-    const std::string& geo_ascii_params) {
+inline std::string ExtractGeoAscii(const std::vector<uint16_t>& geo_key_dir,
+                                   std::size_t key_entry_start,
+                                   const std::string& geo_ascii_params) {
   const uint16_t offset = geo_key_dir[key_entry_start + 3];
   const uint16_t count = geo_key_dir[key_entry_start + 2];
   if (offset >= geo_ascii_params.size() ||
@@ -120,18 +119,12 @@ class Reader<GEOTIFF, image_format> : ReaderBase<GEOTIFF> {
                 << 56);
       }
       return (static_cast<uint64_t>(static_cast<uint8_t>(buf[off])) << 56) |
-             (static_cast<uint64_t>(static_cast<uint8_t>(buf[off + 1]))
-              << 48) |
-             (static_cast<uint64_t>(static_cast<uint8_t>(buf[off + 2]))
-              << 40) |
-             (static_cast<uint64_t>(static_cast<uint8_t>(buf[off + 3]))
-              << 32) |
-             (static_cast<uint64_t>(static_cast<uint8_t>(buf[off + 4]))
-              << 24) |
-             (static_cast<uint64_t>(static_cast<uint8_t>(buf[off + 5]))
-              << 16) |
-             (static_cast<uint64_t>(static_cast<uint8_t>(buf[off + 6]))
-              << 8) |
+             (static_cast<uint64_t>(static_cast<uint8_t>(buf[off + 1])) << 48) |
+             (static_cast<uint64_t>(static_cast<uint8_t>(buf[off + 2])) << 40) |
+             (static_cast<uint64_t>(static_cast<uint8_t>(buf[off + 3])) << 32) |
+             (static_cast<uint64_t>(static_cast<uint8_t>(buf[off + 4])) << 24) |
+             (static_cast<uint64_t>(static_cast<uint8_t>(buf[off + 5])) << 16) |
+             (static_cast<uint64_t>(static_cast<uint8_t>(buf[off + 6])) << 8) |
              static_cast<uint64_t>(static_cast<uint8_t>(buf[off + 7]));
     };
 
@@ -234,8 +227,7 @@ class Reader<GEOTIFF, image_format> : ReaderBase<GEOTIFF> {
     }
 
     if (!model_pixel_scale.empty()) {
-      metadata_.Insert(GeoTiffTiffTag::ModelPixelScaleTag,
-                       model_pixel_scale);
+      metadata_.Insert(GeoTiffTiffTag::ModelPixelScaleTag, model_pixel_scale);
     }
     if (!model_tiepoint.empty()) {
       metadata_.Insert(GeoTiffTiffTag::ModelTiepointTag, model_tiepoint);
@@ -258,13 +250,11 @@ class Reader<GEOTIFF, image_format> : ReaderBase<GEOTIFF> {
         const uint16_t tiff_tag_location =
             geo_key_dir_data[key_entry_start + 1];
         const uint16_t count = geo_key_dir_data[key_entry_start + 2];
-        const uint16_t value_offset =
-            geo_key_dir_data[key_entry_start + 3];
+        const uint16_t value_offset = geo_key_dir_data[key_entry_start + 3];
 
         if (tiff_tag_location == 0) {
           metadata_.Insert(key_id, value_offset);
-        } else if (tiff_tag_location ==
-                   GeoTiffTiffTag::GeoDoubleParamsTag) {
+        } else if (tiff_tag_location == GeoTiffTiffTag::GeoDoubleParamsTag) {
           if (value_offset < geo_double_params.size()) {
             if (count == 1) {
               metadata_.Insert(key_id, geo_double_params[value_offset]);
@@ -278,11 +268,9 @@ class Reader<GEOTIFF, image_format> : ReaderBase<GEOTIFF> {
               metadata_.Insert(key_id, std::move(vals));
             }
           }
-        } else if (tiff_tag_location ==
-                   GeoTiffTiffTag::GeoAsciiParamsTag) {
-          std::string value =
-              detail::ExtractGeoAscii(geo_key_dir_data, key_entry_start,
-                                      geo_ascii_params);
+        } else if (tiff_tag_location == GeoTiffTiffTag::GeoAsciiParamsTag) {
+          std::string value = detail::ExtractGeoAscii(
+              geo_key_dir_data, key_entry_start, geo_ascii_params);
           metadata_.Insert(key_id, value);
         }
       }
@@ -307,7 +295,7 @@ class Reader<GEOTIFF, image_format> : ReaderBase<GEOTIFF> {
   MetadataT metadata_;
 };
 
-inline Result<Metadata<GEOTIFF>> ReadGeoTIFF(
+inline Result<Metadata<GEOTIFF>> ReadGeoTiff(
     const std::filesystem::path& path) {
   std::string ext = path.extension().string();
   for (auto& c : ext) {
