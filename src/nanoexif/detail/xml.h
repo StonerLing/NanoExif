@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <cstdlib>
 #include <cstring>
 #include <string>
 #include <string_view>

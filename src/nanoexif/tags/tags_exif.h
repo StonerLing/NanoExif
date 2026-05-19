@@ -84,8 +84,8 @@ enum JpegMarker : std::uint16_t {
 
 // TIFF byte-order markers and fixed start value.
 enum TiffMarker : std::uint16_t {
-  LITTLE_ENDIAN = 0x4949,
-  BIG_ENDIAN = 0x4D4D,
+  TIFF_LITTLE_ENDIAN = 0x4949,
+  TIFF_BIG_ENDIAN = 0x4D4D,
   FIXED_START = 0x002A
 };
 
