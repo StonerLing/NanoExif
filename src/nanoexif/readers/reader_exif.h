@@ -7,6 +7,7 @@
 #include <fstream>
 #include <iostream>
 #include <istream>
+#include <utility>
 #include <vector>
 
 #include "nanoexif/reader.h"
@@ -152,9 +153,16 @@ class Reader<EXIF, image_format> : ReaderBase<EXIF> {
           break;
         case ExifDataType::RATIONAL:
           if (value_count == 1) {
-            value = Seek<rational_t>(value_offset);
+            value = RationalToDouble(Seek<rational_t>(value_offset),
+                                     is_little_endian_);
           } else {
-            value = Seek<rational_t>(value_offset, value_count);
+            auto raw = Seek<rational_t>(value_offset, value_count);
+            std::vector<double> conv;
+            conv.reserve(raw.size());
+            for (auto& r : raw) {
+              conv.push_back(RationalToDouble(r, is_little_endian_));
+            }
+            value = std::move(conv);
           }
           break;
         case ExifDataType::SBYTE:
@@ -180,9 +188,16 @@ class Reader<EXIF, image_format> : ReaderBase<EXIF> {
           break;
         case ExifDataType::SRATIONAL:
           if (value_count == 1) {
-            value = Seek<rational_t>(value_offset);
+            value = SRationalToDouble(Seek<int64_t>(value_offset),
+                                      is_little_endian_);
           } else {
-            value = Seek<rational_t>(value_offset, value_count);
+            auto raw = Seek<int64_t>(value_offset, value_count);
+            std::vector<double> conv;
+            conv.reserve(raw.size());
+            for (auto& r : raw) {
+              conv.push_back(SRationalToDouble(r, is_little_endian_));
+            }
+            value = std::move(conv);
           }
           break;
         case ExifDataType::UNDEFINED:

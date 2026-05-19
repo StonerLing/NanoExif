@@ -5,6 +5,7 @@
 #include <array>
 #include <cstdint>
 #include <string_view>
+#include <vector>
 
 #include "nanoexif/types.h"
 
@@ -171,8 +172,7 @@ enum ExifTag : uint16_t {
   GPSLongitudeRef = 0x0003,
   GPSLongitude = 0x0004,
   GPSAltitudeRef = 0x0005,
-  GPSAltitude = 0x0006,
-  GPSMapDatum = 0x0012
+  GPSAltitude = 0x0006
 };
 
 template <ExifTag tag>
@@ -218,13 +218,13 @@ struct ExifTagTrait<Orientation> {
 };
 template <>
 struct ExifTagTrait<XResolution> {
-  using type = rational_t;
+  using type = double;
   static constexpr std::size_t size = 1;
   static constexpr std::string_view name = "Exif.XResolution";
 };
 template <>
 struct ExifTagTrait<YResolution> {
-  using type = rational_t;
+  using type = double;
   static constexpr std::size_t size = 1;
   static constexpr std::string_view name = "Exif.YResolution";
 };
@@ -254,13 +254,13 @@ struct ExifTagTrait<CreateDate> {
 };
 template <>
 struct ExifTagTrait<FocalLength> {
-  using type = rational_t;
+  using type = double;
   static constexpr std::size_t size = 1;
   static constexpr std::string_view name = "Exif.FocalLength";
 };
 template <>
 struct ExifTagTrait<FocalLengthIn35mmFilm> {
-  using type = rational_t;
+  using type = uint16_t;
   static constexpr std::size_t size = 1;
   static constexpr std::string_view name = "Exif.FocalLengthIn35mmFilm";
 };
@@ -272,7 +272,7 @@ struct ExifTagTrait<GPSLatitudeRef> {
 };
 template <>
 struct ExifTagTrait<GPSLatitude> {
-  using type = rational_t;
+  using type = std::vector<double>;
   static constexpr std::size_t size = 3;
   static constexpr std::string_view name = "Exif.GPSLatitude";
 };
@@ -284,26 +284,20 @@ struct ExifTagTrait<GPSLongitudeRef> {
 };
 template <>
 struct ExifTagTrait<GPSLongitude> {
-  using type = rational_t;
+  using type = std::vector<double>;
   static constexpr std::size_t size = 3;
   static constexpr std::string_view name = "Exif.GPSLongitude";
 };
 template <>
 struct ExifTagTrait<GPSAltitudeRef> {
-  using type = std::string;
+  using type = int32_t;
   static constexpr std::size_t size = 1;
   static constexpr std::string_view name = "Exif.GPSAltitudeRef";
 };
 template <>
 struct ExifTagTrait<GPSAltitude> {
-  using type = rational_t;
+  using type = double;
   static constexpr std::size_t size = 1;
   static constexpr std::string_view name = "Exif.GPSAltitude";
-};
-template <>
-struct ExifTagTrait<GPSMapDatum> {
-  using type = std::string;
-  static constexpr std::size_t size = 1;
-  static constexpr std::string_view name = "Exif.GPSMapDatum";
 };
 }  // namespace nne

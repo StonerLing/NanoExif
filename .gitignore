@@ -370,3 +370,4 @@ MigrationBackup/
 
 CMakeUserPresets.json
 .clangd
+.opencode/
