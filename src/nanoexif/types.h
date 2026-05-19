@@ -91,7 +91,7 @@ using Metavalue = std::variant<std::monostate,
                                std::vector<double>,
                                std::string>;
 
-void PrintMetavalue(const Metavalue& value) {
+inline void PrintMetavalue(const Metavalue& value) {
   std::visit(
       [](const auto& val) {
         using T = std::decay_t<decltype(val)>;

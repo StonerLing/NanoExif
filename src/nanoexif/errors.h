@@ -38,7 +38,7 @@ inline const ErrorCategory& error_category() {
   return error_category;
 }
 
-[[nodiscard]] std::string ErrorCategory::message(int errnum) const {
+[[nodiscard]] inline std::string ErrorCategory::message(int errnum) const {
   switch (static_cast<ErrorCode>(errnum)) {
     case ErrorCode::COULD_NOT_OPEN_FILE:
       return "Could not open file";
@@ -73,11 +73,15 @@ inline const ErrorCategory& error_category() {
 namespace std {
 template <>
 struct is_error_code_enum<nne::ErrorCode> : public true_type {};
-
-std::error_code make_error_code(nne::ErrorCode errnum) {
-  return {static_cast<int>(errnum), nne::error_category()};
-}
 }  // namespace std
+
+namespace nne {
+
+inline std::error_code make_error_code(ErrorCode errnum) {
+  return {static_cast<int>(errnum), error_category()};
+}
+
+}  // namespace nne
 
 namespace nne {
 
@@ -333,7 +337,7 @@ Result<T> make_result(T value) {
 }
 template <typename T>
 Result<T> make_result(ErrorCode errnum) {
-  return Result<T>::FromError(std::make_error_code(errnum));
+  return Result<T>::FromError(make_error_code(errnum));
 }
 template <typename T>
 Result<T> make_result(std::error_code error) {

@@ -111,7 +111,7 @@ class Reader<XMP, image_format> : ReaderBase<XMP> {
       return make_result<MetadataT>(ErrorCode::COULD_NOT_OPEN_FILE);
     }
 
-    const std::vector<char> buf = ReadEntireFile();
+    const std::vector<char> buf = this->ReadEntireFile();
     if (buf.empty()) {
       return make_result<MetadataT>(ErrorCode::COULD_NOT_OPEN_FILE);
     }
@@ -174,18 +174,6 @@ class Reader<XMP, image_format> : ReaderBase<XMP> {
   }
 
  private:
-  std::vector<char> ReadEntireFile() {
-    input_.seekg(0, std::ios::end);
-    const std::streamsize size = input_.tellg();
-    if (size <= 0) {
-      return {};
-    }
-    input_.seekg(0, std::ios::beg);
-    std::vector<char> buf(static_cast<std::size_t>(size));
-    input_.read(buf.data(), size);
-    return buf;
-  }
-
   [[nodiscard]] std::string ExtractXmpFromJpeg(
       const std::vector<char>& buf) const {
     static constexpr std::string_view xmp_id = "http://ns.adobe.com/xap/1.0/";
@@ -231,7 +219,7 @@ class Reader<XMP, image_format> : ReaderBase<XMP> {
     return detail::FindXmpPacket(buf);
   }
 
-  std::string ExtractXmpFromTiff(const std::vector<char>& buf) {
+  [[nodiscard]] std::string ExtractXmpFromTiff(const std::vector<char>& buf) {
     if (buf.size() < 8) {
       return {};
     }

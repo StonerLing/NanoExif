@@ -83,7 +83,7 @@ class Reader<EXIF, image_format> : ReaderBase<EXIF> {
     } else if constexpr (image_format == TIFF) {
       return make_result(true);
     } else {
-      return make_result<false>(ErrorCode::UNSUPPORTED_FORMAT);
+      return make_result<bool>(ErrorCode::UNSUPPORTED_FORMAT);
     }
 
     return make_result(true);
@@ -106,7 +106,7 @@ class Reader<EXIF, image_format> : ReaderBase<EXIF> {
   uint32_t ParseIfd(uint32_t ifd_offset) {
     uint16_t num_entries = Seek<uint16_t>(ifd_offset);
 
-    for (int i = 0; i < num_entries; ++i) {
+    for (uint16_t i = 0; i < num_entries; ++i) {
       std::size_t entry_offset = ifd_offset + 2 + (12 * i);
 
       uint16_t tag = Seek<uint16_t>(entry_offset);
@@ -199,6 +199,26 @@ class Reader<EXIF, image_format> : ReaderBase<EXIF> {
             value = std::move(conv);
           }
           break;
+        case ExifDataType::FLOAT:
+          if (value_count == 1) {
+            value = static_cast<double>(Seek<float>(value_offset));
+          } else {
+            auto raw = Seek<float>(value_offset, value_count);
+            std::vector<double> conv;
+            conv.reserve(raw.size());
+            for (auto& f : raw) {
+              conv.push_back(static_cast<double>(f));
+            }
+            value = std::move(conv);
+          }
+          break;
+        case ExifDataType::DOUBLE:
+          if (value_count == 1) {
+            value = Seek<double>(value_offset);
+          } else {
+            value = Seek<double>(value_offset, value_count);
+          }
+          break;
         case ExifDataType::UNDEFINED:
           if (value_count == 1) {
             value = Seek<uint8_t>(value_offset);
@@ -213,7 +233,7 @@ class Reader<EXIF, image_format> : ReaderBase<EXIF> {
       metadata_.Insert(tag, value);
     }
 
-    return 0;
+    return Seek<uint32_t>(ifd_offset + 2 + (12 * num_entries));
   }
 
   template <typename T>

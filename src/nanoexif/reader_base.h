@@ -12,7 +12,6 @@
 #include "nanoexif/traits.h"
 #include "nanoexif/types.h"
 
-
 namespace nne {
 
 namespace detail {
@@ -70,7 +69,7 @@ template <MetaFormat meta_format>
 class ReaderBase {
  public:
   explicit ReaderBase(std::string_view path)
-      : input_(path.data(), std::ios::binary) {};
+      : input_(path.data(), std::ios::binary), is_little_endian_(true) {};
 
   virtual Result<Metadata<meta_format>> Read() = 0;
 
@@ -166,8 +165,20 @@ class ReaderBase {
     return is_little_endian_ ? value : ReverseBytes(value);
   }
 
+  std::vector<char> ReadEntireFile() {
+    input_.seekg(0, std::ios::end);
+    const std::streamsize size = input_.tellg();
+    if (size <= 0) {
+      return {};
+    }
+    input_.seekg(0, std::ios::beg);
+    std::vector<char> buf(static_cast<std::size_t>(size));
+    input_.read(buf.data(), size);
+    return buf;
+  }
+
   std::ifstream input_;
-  bool is_little_endian_;
+  bool is_little_endian_;  // NOLINT
 };
 
 template <ImageFormat image_format, MetaFormat meta_format>

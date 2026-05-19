@@ -2,8 +2,8 @@
 
 #pragma once
 
+#include "nanoexif/tags/tags_exif.h"
 #include "nanoexif/types.h"
-#include "tags/tags_exif.h"
 
 namespace nne {
 template <MetaFormat meta_format>

@@ -1,9 +1,9 @@
 ﻿// SPDX-License-Identifier: MIT
 
+#pragma once
+
 #include <array>
 #include <vector>
-
-#pragma once
 
 namespace nne {
 template <typename T>

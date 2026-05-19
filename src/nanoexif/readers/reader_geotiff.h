@@ -58,7 +58,7 @@ class Reader<GEOTIFF, image_format> : ReaderBase<GEOTIFF> {
       return make_result<MetadataT>(ErrorCode::COULD_NOT_OPEN_FILE);
     }
 
-    const std::vector<char> buf = ReadEntireFile();
+    const std::vector<char> buf = this->ReadEntireFile();
     if (buf.empty()) {
       return make_result<MetadataT>(ErrorCode::COULD_NOT_OPEN_FILE);
     }
@@ -280,18 +280,6 @@ class Reader<GEOTIFF, image_format> : ReaderBase<GEOTIFF> {
   }
 
  private:
-  std::vector<char> ReadEntireFile() {
-    input_.seekg(0, std::ios::end);
-    const std::streamsize size = input_.tellg();
-    if (size <= 0) {
-      return {};
-    }
-    input_.seekg(0, std::ios::beg);
-    std::vector<char> buf(static_cast<std::size_t>(size));
-    input_.read(buf.data(), size);
-    return buf;
-  }
-
   MetadataT metadata_;
 };
 
