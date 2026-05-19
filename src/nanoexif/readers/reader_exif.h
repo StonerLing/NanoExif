@@ -9,6 +9,7 @@
 #include <istream>
 #include <utility>
 #include <vector>
+#include <filesystem>
 
 #include "nanoexif/reader.h"
 #include "nanoexif/tags/tags_exif.h"
@@ -159,7 +160,7 @@ class Reader<EXIF, image_format> : ReaderBase<EXIF> {
             auto raw = Seek<rational_t>(value_offset, value_count);
             std::vector<double> conv;
             conv.reserve(raw.size());
-            for (auto& r : raw) {
+            for (auto& r : raw) {  // NOLINT
               conv.push_back(RationalToDouble(r, is_little_endian_));
             }
             value = std::move(conv);
@@ -194,7 +195,7 @@ class Reader<EXIF, image_format> : ReaderBase<EXIF> {
             auto raw = Seek<int64_t>(value_offset, value_count);
             std::vector<double> conv;
             conv.reserve(raw.size());
-            for (auto& r : raw) {
+            for (auto& r : raw) {  // NOLINT
               conv.push_back(SRationalToDouble(r, is_little_endian_));
             }
             value = std::move(conv);
@@ -231,4 +232,24 @@ class Reader<EXIF, image_format> : ReaderBase<EXIF> {
   uint32_t total_bytes_;
   std::vector<std::byte> tiff_header_;
 };
+
+inline Result<Metadata<EXIF>> ReadEXIF(const std::filesystem::path& path) {
+  std::string ext = path.extension().string();
+  for (auto& c : ext) {  // NOLINT
+    if (c >= 'A' && c <= 'Z') {
+      c += 32;
+    }
+  }
+
+  if (ext == ".jpg" || ext == ".jpeg") {
+    Reader<EXIF, JPEG> reader(path.string());
+    return reader.Read();
+  }
+  if (ext == ".tif" || ext == ".tiff") {
+    Reader<EXIF, TIFF> reader(path.string());
+    return reader.Read();
+  }
+
+  return make_result<Metadata<EXIF>>(ErrorCode::UNSUPPORTED_FORMAT);
+}
 }  // namespace nne

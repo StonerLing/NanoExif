@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <iostream>
 #include <string>
+#include <filesystem>
 
 #include "nanoexif/readers/reader_exif.h"
 
@@ -18,9 +19,7 @@ int main(int argc, char** argv) {
     return 1;
   }
 
-  Reader<EXIF, JPEG> reader(argv[1]);
-
-  auto result = reader.Read();
+  auto result = ReadEXIF(std::filesystem::path(argv[1]));
   if (!result.has_value()) {
     std::cout << "Error: " << result.error().message() << '\n';
     return 1;

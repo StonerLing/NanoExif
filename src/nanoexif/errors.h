@@ -49,6 +49,9 @@ inline const ErrorCategory& error_category() {
     case ErrorCode::INVALID_JPEG_HEADER:
       return "Invalid JPEG header";
       break;
+    case ErrorCode::UNSUPPORTED_FORMAT:
+      return "Unsupported format";
+      break;
     default:
       return "Unknown error";
   }
