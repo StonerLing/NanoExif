@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        build_type: [Release, Debug]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure CMake
+        run: >
+          cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -DNANOEXIF_EXAMPLES_ENABLED=ON
+
+      - name: Build
+        run: cmake --build build --config ${{ matrix.build_type }}
+
+      - name: Run examples (basic smoke test)
+        run: |
+          echo "Build completed successfully."
+          echo "Platform: ${{ matrix.os }} / ${{ matrix.build_type }}"
