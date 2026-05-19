@@ -46,9 +46,9 @@ inline double SRationalToDouble(int64_t packed, bool is_little_endian) {
   return static_cast<double>(num) / static_cast<double>(den);
 }
 
-enum ImageFormat : uint8_t { AUTO, JPEG, TIFF, GEOTIFF };
+enum ImageFormat : uint8_t { AUTO, JPEG, TIFF };
 
-enum MetaFormat : uint8_t { EXIF, XMP };
+enum MetaFormat : uint8_t { EXIF, XMP, GEOTIFF };
 
 template <MetaFormat F>
 struct Metakey {};
@@ -61,6 +61,11 @@ struct Metakey<EXIF> {
 template <>
 struct Metakey<XMP> {
   using type = std::string;
+};
+
+template <>
+struct Metakey<GEOTIFF> {
+  using type = uint16_t;
 };
 
 using Metavalue = std::variant<std::monostate,

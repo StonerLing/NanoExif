@@ -21,8 +21,6 @@ template <>
 struct is_metaformat_supported<JPEG, EXIF> : std::true_type {};
 template <>
 struct is_metaformat_supported<TIFF, EXIF> : std::true_type {};
-template <>
-struct is_metaformat_supported<GEOTIFF, EXIF> : std::true_type {};
 
 template <ImageFormat image_format>
 class Reader<EXIF, image_format> : ReaderBase<EXIF> {
@@ -82,7 +80,7 @@ class Reader<EXIF, image_format> : ReaderBase<EXIF> {
       if (!EqualIgnoreEndian(Next<std::array<char, 6>>().data(), 6, "Exif\0")) {
         return make_result<bool>(ErrorCode::INVALID_EXIF_HEADER);
       }
-    } else if constexpr (image_format == TIFF || image_format == GEOTIFF) {
+    } else if constexpr (image_format == TIFF) {
       return make_result(true);
     } else {
       return make_result<false>(ErrorCode::UNSUPPORTED_FORMAT);

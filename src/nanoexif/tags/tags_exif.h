@@ -93,10 +93,12 @@ enum ExifDataType : std::uint16_t {  // NOLINT
   UNDEFINED = 0x7,
   SSHORT = 0x8,
   SLONG = 0x9,
-  SRATIONAL = 0xA
+  SRATIONAL = 0xA,
+  FLOAT = 0xB,
+  DOUBLE = 0xC
 };
-static constexpr std::array<std::size_t, 11> kExifTypeNumBytes{
-    0, 1, 1, 2, 4, 8, 1, 1, 2, 4, 8};
+static constexpr std::array<std::size_t, 13> kExifTypeNumBytes{
+    0, 1, 1, 2, 4, 8, 1, 1, 2, 4, 8, 4, 8};
 
 template <ExifDataType type>
 struct ExifTypeTrait {};
