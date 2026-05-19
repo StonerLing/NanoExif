@@ -1,4 +1,7 @@
 ﻿// SPDX-License-Identifier: MIT
+//
+// GeoTIFF constants: GeoKey IDs, TIFF tag numbers for geospatial data, and
+// type-traits mapping each GeoKey to its C++ type.
 
 #pragma once
 
@@ -9,6 +12,7 @@
 
 namespace nne {
 
+// GeoTIFF GeoKey IDs (defined by the GeoTIFF specification).
 enum GeoTiffTag : uint16_t {
   GTModelTypeGeoKey = 1024,
   GTRasterTypeGeoKey = 1025,

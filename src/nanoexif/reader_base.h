@@ -1,4 +1,8 @@
 ﻿// SPDX-License-Identifier: MIT
+//
+// ReaderBase: shared base class for all metadata readers.  Provides
+// low-level byte reading helpers (Next, NextVector, FromBytes) and endian
+// conversion utilities used by the format-specific specializations.
 
 #pragma once
 
@@ -16,6 +20,7 @@ namespace nne {
 
 namespace detail {
 
+// Throws std::out_of_range if offset+n exceeds buf.size().
 inline void EnsureRange(const std::vector<std::byte>& buf,
                         std::size_t offset,
                         std::size_t n) {
@@ -24,6 +29,8 @@ inline void EnsureRange(const std::vector<std::byte>& buf,
   }
 }
 
+// Assembles an unsigned integer from a sequence of bytes, respecting the
+// specified endianness.  U must be unsigned and wide enough to hold n bytes.
 template <typename U>
 U AssembleUnsignedFromBytes(const std::vector<std::byte>& buf,
                             std::size_t offset,
@@ -50,6 +57,7 @@ U AssembleUnsignedFromBytes(const std::vector<std::byte>& buf,
   return value;
 }
 
+// Bit-casts an unsigned integer to a floating-point value of the same size.
 template <typename F, typename U>
 F AssembleFloatFromUint(U value) {
   static_assert(std::is_floating_point_v<F>, "F must be floating point");
@@ -59,6 +67,7 @@ F AssembleFloatFromUint(U value) {
   return float_value;
 }
 
+// Converts a char vector to std::string.
 inline std::string AsString(const std::vector<char>& chars) {
   return std::string{chars.cbegin(), chars.cend()};
 }
@@ -74,6 +83,8 @@ class ReaderBase {
   virtual Result<Metadata<meta_format>> Read() = 0;
 
  protected:
+  // Reads sizeof(T) raw bytes directly from the file stream and returns them
+  // as type T.  T must be trivially copyable.  Handles std::array via data().
   template <typename T>
   [[nodiscard]] T Next() {
     static_assert(std::is_trivially_copyable_v<T>,
@@ -90,6 +101,7 @@ class ReaderBase {
     }
   }
 
+  // Reads len elements of type T from the file stream into a vector.
   template <typename T>
   [[nodiscard]] std::vector<T> NextVector(std::size_t len) {
     static_assert(std::is_trivially_copyable_v<T>,
@@ -104,6 +116,8 @@ class ReaderBase {
     return buffer;
   }
 
+  // Extracts a single value of type T from an in-memory byte buffer,
+  // handling endian conversion.  Supports integral and floating-point types.
   template <typename T>
   T FromBytes(const std::vector<std::byte>& buffer, std::size_t offset) {
     if constexpr (std::is_integral_v<T>) {
@@ -132,6 +146,7 @@ class ReaderBase {
     }
   }
 
+  // Extracts count elements of type T from an in-memory byte buffer.
   template <typename T>
   std::vector<T> FromBytes(const std::vector<std::byte>& buf,
                            std::size_t offset,
@@ -155,6 +170,7 @@ class ReaderBase {
     return out;
   }
 
+  // Converts value to big-endian or little-endian from native byte order.
   template <typename T>
   [[nodiscard]] T AsBE(T value) {
     return is_little_endian_ ? ReverseBytes(value) : value;

@@ -1,4 +1,8 @@
 ﻿// SPDX-License-Identifier: MIT
+//
+// Specialization of Reader for XMP metadata (MetaFormat::XMP).
+// Extracts XMP packets from JPEG APP1 segments or TIFF tag 0x700, then
+// parses the XML with a minimal recursive-descent parser (detail/xml.h).
 
 #pragma once
 
@@ -30,6 +34,9 @@ struct is_metaformat_supported<TIFF, XMP> : std::true_type {};
 
 namespace detail {
 
+// Locates an XMP packet within a buffer by searching for <?xpacket begin=
+// and <?xpacket end= markers.  Handles truncated packets (missing end
+// marker) by returning everything from start to end of buffer.
 inline std::string FindXmpPacket(const std::vector<char>& buf) {
   static constexpr std::string_view xmp_pkt_start = "<?xpacket begin=";
   static constexpr std::string_view xmp_pkt_end = "<?xpacket end=";
@@ -57,6 +64,9 @@ inline std::string FindXmpPacket(const std::vector<char>& buf) {
   return {start, pos + buf.size() - (start - pos)};
 }
 
+// Recursively extracts XMP attribute and element text values into a
+// Metadata<XMP> map.  Skips xmlns and rdf: namespace declarations (they
+// describe the RDF structure rather than carrying metadata values).
 inline void ExtractXmpAttributes(const detail::XmlElement& elem,
                                  Metadata<XMP>& metadata) {
   for (const auto& attr : elem.attributes) {

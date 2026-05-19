@@ -1,4 +1,8 @@
 ﻿// SPDX-License-Identifier: MIT
+//
+// EXIF-specific constants: JPEG markers, TIFF identifiers, data types, and
+// tag IDs.  Also provides type-traits that map ExifTag values to their
+// corresponding C++ types.
 
 #pragma once
 
@@ -11,6 +15,7 @@
 
 namespace nne {
 
+// JPEG marker bytes (high byte 0xFF, low byte varies).
 enum JpegMarker : std::uint16_t {
   SOF0 = 0xFFC0,
   SOF1 = 0xFFC1,
@@ -77,12 +82,14 @@ enum JpegMarker : std::uint16_t {
   COM = 0xFFFE
 };
 
+// TIFF byte-order markers and fixed start value.
 enum TiffMarker : std::uint16_t {
   LITTLE_ENDIAN = 0x4949,
   BIG_ENDIAN = 0x4D4D,
   FIXED_START = 0x002A
 };
 
+// EXIF IFD entry data types.
 enum ExifDataType : std::uint16_t {  // NOLINT
   BYTE = 0x1,
   ASCII = 0x2,
@@ -97,9 +104,13 @@ enum ExifDataType : std::uint16_t {  // NOLINT
   FLOAT = 0xB,
   DOUBLE = 0xC
 };
+
+// Byte count for each ExifDataType value (indexed by type id).
 static constexpr std::array<std::size_t, 13> kExifTypeNumBytes{
     0, 1, 1, 2, 4, 8, 1, 1, 2, 4, 8, 4, 8};
 
+// Maps ExifDataType values to their native C++ types, used by the EXIF reader
+// to determine storage size and type for each IFD entry.
 template <ExifDataType type>
 struct ExifTypeTrait {};
 
@@ -154,6 +165,7 @@ struct ExifTypeTrait<SRATIONAL> {
   static constexpr std::size_t size = 8;
 };
 
+// Known EXIF tags.  The tag IDs follow the EXIF / TIFF specification.
 enum ExifTag : uint16_t {
   PixelXDimension = 0xA002,
   PixelYDimension = 0xA003,
@@ -177,6 +189,8 @@ enum ExifTag : uint16_t {
   GPSAltitude = 0x0006
 };
 
+// Provides the expected C++ type and human-readable name for each known
+// ExifTag.  Used by Metadata::Get<ExifTag>() for typed access.
 template <ExifTag tag>
 struct ExifTagTrait {
   static constexpr uint16_t value = tag;

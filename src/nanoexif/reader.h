@@ -1,4 +1,8 @@
 ﻿// SPDX-License-Identifier: MIT
+//
+// Reader template declaration.  Specializations (in reader_exif.h,
+// reader_geotiff.h, reader_xmp.h) provide the actual parsing logic for each
+// (MetaFormat, ImageFormat) combination.
 
 #pragma once
 

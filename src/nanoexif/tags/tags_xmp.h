@@ -1,4 +1,7 @@
 ﻿// SPDX-License-Identifier: MIT
+//
+// XMP namespace constants: property names under the dc, xmp, exif, tiff,
+// photoshop, and xmpMM namespaces.
 
 #pragma once
 

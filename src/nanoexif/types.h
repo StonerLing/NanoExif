@@ -1,4 +1,6 @@
 ﻿// SPDX-License-Identifier: MIT
+//
+// Core type definitions shared across all readers.
 
 #pragma once
 
@@ -13,7 +15,12 @@
 #include "nanoexif/traits.h"
 
 namespace nne {
+
+// A RATIONAL in EXIF packs numerator (low 32 bits) and denominator (high 32
+// bits) into a single 64-bit integer.  SRationalToDouble does the same for
+// signed rationals.
 using rational_t = std::uint64_t;
+
 inline double RationalToDouble(uint64_t packed, bool is_little_endian = true) {
   uint32_t low = static_cast<uint32_t>(packed & 0xFFFFFFFFU);
   uint32_t high = static_cast<uint32_t>(packed >> 32);
@@ -23,9 +30,9 @@ inline double RationalToDouble(uint64_t packed, bool is_little_endian = true) {
 
   if (den == 0U) {
     if (num == 0U) {
-      return std::numeric_limits<double>::quiet_NaN();  // 0/0
+      return std::numeric_limits<double>::quiet_NaN();
     }
-    return std::numeric_limits<double>::infinity();  // n/0
+    return std::numeric_limits<double>::infinity();
   }
 
   return static_cast<double>(num) / static_cast<double>(den);
@@ -48,10 +55,15 @@ inline double SRationalToDouble(int64_t packed, bool is_little_endian) {
   return static_cast<double>(num) / static_cast<double>(den);
 }
 
+// Image container format: JPEG uses APP1 marker segments, TIFF is
+// self-contained.  AUTO is reserved for future auto-detection.
 enum ImageFormat : uint8_t { AUTO, JPEG, TIFF };
 
+// Which metadata standard to parse.
 enum MetaFormat : uint8_t { EXIF, XMP, GEOTIFF };
 
+// Maps each MetaFormat to its key type: EXIF/GeoTIFF use uint16_t tag IDs,
+// XMP uses string property names.
 template <MetaFormat F>
 struct Metakey {};
 
@@ -70,6 +82,7 @@ struct Metakey<GEOTIFF> {
   using type = uint16_t;
 };
 
+// Polymorphic value storage for any EXIF/XMP/GeoTIFF data type.
 using Metavalue = std::variant<std::monostate,
                                uint8_t,
                                std::vector<uint8_t>,
@@ -91,6 +104,8 @@ using Metavalue = std::variant<std::monostate,
                                std::vector<double>,
                                std::string>;
 
+// Pretty-print a Metavalue to stdout.  Handles scalars, vectors, and empty
+// values.  uint8_t/int8_t are printed as integers, not characters.
 inline void PrintMetavalue(const Metavalue& value) {
   std::visit(
       [](const auto& val) {

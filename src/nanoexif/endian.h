@@ -1,4 +1,7 @@
 ﻿// SPDX-License-Identifier: MIT
+//
+// Endianness utilities: detect host byte order, swap bytes, and compare
+// values regardless of byte order.
 
 #pragma once
 
@@ -7,6 +10,8 @@
 
 namespace nne {
 
+// Reverses the byte order of any trivially-copyable type T by treating its
+// memory as a char array and calling std::reverse.
 template <typename T>
 T ReverseBytes(const T& data) {
   T reversed = data;
@@ -15,6 +20,8 @@ T ReverseBytes(const T& data) {
   return reversed;
 }
 
+// Detects host endianness at runtime by inspecting the first byte of an
+// integer.  (C++20 provides std::endian; for C++17 a runtime check suffices.)
 inline bool IsNativeLittleEndian() {
   unsigned int num = 1;
   char* byte = (char*)&num;
@@ -23,6 +30,7 @@ inline bool IsNativeLittleEndian() {
 
 inline bool IsNativeBigEndian() { return !IsNativeLittleEndian(); }
 
+// Converts between little/big-endian and native byte order.
 template <typename T>
 T LittleEndianToNative(T data) {
   return IsNativeLittleEndian() ? data : ReverseBytes(data);
@@ -43,11 +51,14 @@ T NativeToBigEndian(T data) {
   return IsNativeBigEndian() ? data : ReverseBytes(data);
 }
 
+// Returns true if data1 equals data2 in either byte order.
 template <typename T1, typename T2>
 bool EqualIgnoreEndian(const T1& data1, const T2& data2) {
   return data1 == data2 || data1 == ReverseBytes(data2);
 };
 
+// Overload for comparing a runtime buffer against a compile-time string
+// literal, checking both native and reversed byte orders.
 template <std::size_t N>
 bool EqualIgnoreEndian(const char* data1,
                        std::size_t len,

@@ -1,4 +1,8 @@
 ﻿// SPDX-License-Identifier: MIT
+//
+// Specialization of Reader for GeoTIFF metadata (MetaFormat::GEOTIFF).
+// Parses GeoKey directories, double/ASCII parameter arrays, and model
+// transformation tags from TIFF files.
 
 #pragma once
 
@@ -27,6 +31,9 @@ struct is_metaformat_supported<TIFF, GEOTIFF> : std::true_type {};
 
 namespace detail {
 
+// Extracts an ASCII GeoKey value from the GeoAsciiParamsTag buffer.
+// The GeoKey directory entry specifies an offset and count into the ASCII
+// parameter block.  Trailing '|' and NUL characters are stripped.
 inline std::string ExtractGeoAscii(const std::vector<uint16_t>& geo_key_dir,
                                    std::size_t key_entry_start,
                                    const std::string& geo_ascii_params) {

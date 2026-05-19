@@ -1,4 +1,10 @@
 ﻿// SPDX-License-Identifier: MIT
+//
+// Specialization of Reader for the EXIF format (MetaFormat::EXIF).
+// Supports both JPEG and TIFF container formats (ImageFormat).
+//
+// Parses the TIFF IFD (Image File Directory) structure inside APP1 segments
+// (JPEG) or the raw file (TIFF) and populates a Metadata<EXIF> map.
 
 #pragma once
 

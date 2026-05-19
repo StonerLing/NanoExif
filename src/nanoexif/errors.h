@@ -1,4 +1,7 @@
 ﻿// SPDX-License-Identifier: MIT
+//
+// Error handling: error codes, categories, and a lightweight Result<T,E>
+// type modeled after std::expected (C++23).
 
 #pragma once
 
@@ -13,6 +16,7 @@
 
 namespace nne {
 
+// Error codes returned by all parsing operations.
 enum class ErrorCode : uint8_t {
   COULD_NOT_OPEN_FILE,
   COULD_NOT_DETERMINE_EXTENSION,
@@ -85,7 +89,10 @@ inline std::error_code make_error_code(ErrorCode errnum) {
 
 namespace nne {
 
-// A simple 'std::expected' in c++17
+// Lightweight alternative to std::expected (C++23) for C++17 callers.
+// Stores either a value of type T or an error of type E in a type-erased
+// union, using manual construction/destruction for non-trivially-copyable
+// types.
 template <typename T, typename E = std::error_code>
 class Result {
  public:

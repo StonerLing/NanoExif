@@ -1,4 +1,6 @@
 ﻿// SPDX-License-Identifier: MIT
+//
+// Generic metadata container templated by metadata format.
 
 #pragma once
 
@@ -6,6 +8,11 @@
 #include "nanoexif/types.h"
 
 namespace nne {
+
+// Stores parsed metadata as a key-value map.  Key type depends on MetaFormat
+// (uint16_t for EXIF/GeoTIFF, std::string for XMP).  Values are always
+// Metavalue variants.  The Get<ExifTag>() overload provides typed access for
+// known EXIF tags via ExifTagTrait.
 template <MetaFormat meta_format>
 class Metadata {
   using key_type = typename Metakey<meta_format>::type;
@@ -29,6 +36,8 @@ class Metadata {
     return data_.at(key);
   }
 
+  // Typed accessor for known EXIF tags.  Returns a default-constructed value
+  // (numeric zero or empty string) if the tag is not present.
   template <ExifTag tag>
   auto Get() const {
     using value_type = typename ExifTagTrait<tag>::type;
